@@ -6,7 +6,7 @@ def normalize(data_array, mean, std):
     """how to do normalization"""
     """ YOUR CODE HERE FOR PROBLEM 2A.3"""
     # hint: remember to fix numerical issues, such as divided by 0!
-    result =
+    result = (data_array - mean) / (std + 1e-10)
     """ YOUR CODE ENDS"""
     return result
 

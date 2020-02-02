@@ -82,13 +82,13 @@ class PPO(Algo, Serializable):
             # hint: as described, you need to first clip the likelihood_ratio between 1 + eps and 1 - eps
             # in the code, eps is self._clip_eps
             # finally you need to find the minimum of the non clipped objective and the clipped one, and we just call it clipped_obj in the code.
-            obj_1 =
-            obj_2 =
-            clipped_obj =
+            obj_1 = tf.clip_by_value(likelihood_ratio, 1 - self._clip_eps, 1 + self._clip_eps) * adv_ph
+            obj_2 = likelihood_ratio * adv_ph
+            clipped_obj = tf.minimum(obj_1, obj_2)
             """ YOUR CODE END """
         else:
             """YOUR CODE HERE FOR PROBLEM 1A"""
-            clipped_obj =          # hint: here we also abuse the var name a bit. The obj is not clipped here!!!!
+            clipped_obj = likelihood_ratio * adv_ph    # hint: here we also abuse the var name a bit. The obj is not clipped here!!!!
             """YOUR CODE ENDS"""
 
         if self.use_entropy:

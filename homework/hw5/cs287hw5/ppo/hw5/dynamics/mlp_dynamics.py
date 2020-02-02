@@ -89,7 +89,9 @@ class MLPDynamicsModel(Serializable):
             # define loss and train_op
             """ YOUR CODE HERE FOR PROBLEM 2A.1, YOUR CODE HERE FOR PROBLEM 2B """
             # hint: you need to write the loss between delta_ph (your target) and delta_pred using a l2 loss.
-            self.loss =
+            self.loss = tf.nn.l2_loss(self.delta_ph - self.delta_pred)
+            # self.loss = tf.reduce_sum( tf.abs(self.delta_ph - self.delta_pred) )
+            # self.loss = (tf.nn.l2_loss(self.delta_ph - self.delta_pred) * 2) ** 0.5
             """ YOUR CODE ENDS """
             self.optimizer = optimizer(self.learning_rate)
             self.train_op = self.optimizer.minimize(self.loss)
@@ -128,7 +130,7 @@ class MLPDynamicsModel(Serializable):
         # split into valid and test set
         """ YOUR CODE HERE FOR PROBLEM 2A.2 """
         # hint: here you need to compute delta which based on obs and obs_next
-        delta =
+        delta = obs_next - obs
         """ YOUR CODE ENDS """
         obs_train, act_train, delta_train, obs_test, act_test, delta_test = train_test_split(obs, act, delta,
                                                                                              test_split_ratio=valid_split_ratio)
@@ -357,11 +359,11 @@ class MLPDynamicsModel(Serializable):
         """ YOUR CODE HERE FOR PROBLEM 2A.3"""
         # hint: you should write your own normalize function in hw5.dynamics.utils.normalize, and utilize it here!
         # self.normalization contains mean and std. e.g. self.normalization['obs'][0] is the mean of obs.
-        obs_normalized =
-        actions_normalized =
+        obs_normalized = normalize(obs, self.normalization["obs"][0], self.normalization["obs"][1])
+        actions_normalized = normalize(act, self.normalization["act"][0], self.normalization["act"][1])
 
         if delta is not None:
-            deltas_normalized =
+            deltas_normalized = normalize(delta, self.normalization["delta"][0], self.normalization["delta"][1])
             """ YOUR CODE ENDS"""
             return obs_normalized, actions_normalized, deltas_normalized
         else:

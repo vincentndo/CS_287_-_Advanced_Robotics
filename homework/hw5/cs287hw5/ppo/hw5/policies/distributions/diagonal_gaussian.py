@@ -82,12 +82,12 @@ class DiagonalGaussian(Distribution):
         """ YOUR CODE HERE FOR PROBLEM 1C"""
         with tf.variable_scope("log_li_new"):
             # hint: consider using the function you just inplemented in PROBLEM 1A!
-            logli_new =
+            logli_new = self.log_likelihood_sym(x_var, new_dist_info_vars)
         with tf.variable_scope("log_li_old"):
             # hint: consider using the function you just inplemented in PROBLEM 1A!
-            logli_old =
+            logli_old = self.log_likelihood_sym(x_var, old_dist_info_vars)
         # hint: note this is pi over pi_old, not log_pi over log_pi_old
-        pi_over_pi_old =
+        pi_over_pi_old = tf.exp(logli_new) / tf.exp(logli_old)
         """ YOUR CODE ENDS"""
         return pi_over_pi_old
 
@@ -104,7 +104,7 @@ class DiagonalGaussian(Distribution):
         log_stds = dist_info_vars["log_std"]
         "YOUR CODE HERE FOR PROBLEM 1A"
         # hint: compute loglikelihood of gaussian
-
+        logli = - 1 / 2 * tf.reduce_sum( (x_var - means) ** 2 / (tf.exp(log_stds) ** 2), axis=1) - self.dim / 2 * np.log(2 * np.pi) - tf.reduce_sum(log_stds, axis=1)
         "YOUR CODE END"
         return logli
 
@@ -133,7 +133,7 @@ class DiagonalGaussian(Distribution):
         log_stds = dist_info_vars["log_std"]
         """ YOUR CODE HERE FOR PROBLEM 1E """
         # hint: compute entropy, look it up online if you don't know. Remember, it is diagonal gaussian.
-        result =
+        result = 0.5 + 0.5 * np.log(2 * np.pi) + log_stds
         """ YOUR CODE ENDS """
         return result
 

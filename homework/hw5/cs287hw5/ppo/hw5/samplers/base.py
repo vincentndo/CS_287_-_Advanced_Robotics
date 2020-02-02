@@ -259,7 +259,11 @@ class SampleProcessor(object):
         if use_gae:
             """ YOUR CODE HERE FOR PROBLEM 1F (EXTRA CREDITS) """
             # hint: use self.gae_lambda, utils.discount_cumsum you just implemented
-
+            for idx, path in enumerate(paths):
+                path_vpreds = np.append(all_path_baselines[idx], 0)
+                advantages = path["rewards"] + self.discount * path_vpreds[1:] - path_vpreds[:-1]
+                path["advantages"] = utils.discount_cumsum(advantages, self.discount * self.gae_lambda)
+                # path["advantages"] = (path["advantages"] - path["advantages"].mean()) / np.maximum(path["advantages"].std(), 1e-10)
             """ YOUR CODE ENDS """
         else:
             for idx, path in enumerate(paths):

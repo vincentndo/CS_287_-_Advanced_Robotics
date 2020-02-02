@@ -85,7 +85,7 @@ def dummy_cumsum(x, discount=1):
     Returns:
         (float) : y[t] - discount*y[t+1] = x[t] or rev(y)[t] - discount*rev(y)[t-1] = rev(x)[t]
     """
-    return scipy.signal.lfilter([1], [1, float(-1)], x[::-1], axis=0)[::-1]
+    return scipy.signal.lfilter([1], [1, float(-discount)], x[::-1], axis=0)[::-1]
 
 
 def discount_cumsum(x, discount):
@@ -97,7 +97,7 @@ def discount_cumsum(x, discount):
     """
     """ YOUR CODE HERE FOR PROBLEM 1A """
     # hint you can also try use other functions, or figure out which "1" is actually the discount in dummy_cumsum
-    result =
+    result = dummy_cumsum(x, discount)
     """ YOUR CODE ENDS """
     return result
 

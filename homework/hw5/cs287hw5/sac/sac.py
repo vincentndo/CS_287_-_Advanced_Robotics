@@ -154,16 +154,42 @@ class SAC:
         """
         """ YOUR CODE HERE FOR PROBLEM 3A.2"""
 
-        if q_function2 is None:
+        v_values = value_function(self._observations_ph)
+        v_values = tf.squeeze(v_values, axis=1)
 
+        actions, log_pis = policy(self._observations_ph)
+        q_values = q_function( (self._observations_ph, actions) )
+
+        if q_function2 is None:
+            pass
         else:
             """ YOUR CODE HERE FOR PROBLEM 3A.3"""
+            q2_values = q_function2( (self._observations_ph, actions) )
+            q_values = tf.minimum(q_values, q2_values)
 
+        q_values = tf.squeeze(q_values, axis=1)
+            
+        q_values_offset = q_values - self._alpha * log_pis
+        # q_values_offset = tf.stop_gradient(q_values_offset)
+        v_loss = tf.reduce_mean( (v_values - q_values_offset) ** 2 )
+
+        return v_loss
 
 
     def _q_function_loss_for(self, q_function, target_value_function):
         """ q loss """
         """ YOUR CODE HERE FOR PROBLEM 3A.1"""
+        q_values = q_function((self._observations_ph, self._actions_ph))
+        q_values = tf.squeeze(q_values, axis=1)
+
+        target_values = target_value_function(self._next_observations_ph)
+        target_values = tf.squeeze(target_values, axis=1)
+
+        target = self._rewards_ph + (1 - self._terminals_ph) * self._discount * target_values
+        # target = tf.stop_gradient(target)
+        q_loss = tf.reduce_mean( (q_values - target) ** 2 )
+
+        return q_loss
 
 
     def _create_target_update(self, source, target):

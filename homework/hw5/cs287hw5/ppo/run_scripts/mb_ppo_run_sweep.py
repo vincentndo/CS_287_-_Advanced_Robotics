@@ -22,7 +22,7 @@ import argparse
 
 
 def run_experiment(**kwargs):
-    exp_dir = os.getcwd() + '/data/parallel_mb_ppo/' + kwargs['name'] + '/' + kwargs.get('exp_name', '')
+    exp_dir = os.getcwd() + '/data/parallel_mb_ppo/' + kwargs['name'] + '/' + kwargs.get('exp_name', '') + f"/{str(kwargs['exp_num']).zfill(2)}"
     logger.configure(dir=exp_dir, format_strs=['stdout', 'log', 'csv'], snapshot_mode='last')
     json.dump(kwargs, open(exp_dir + '/params.json', 'w'), indent=2, sort_keys=True, cls=ClassEncoder)
     config = tf.ConfigProto()
@@ -100,6 +100,7 @@ def run_experiment(**kwargs):
             gae_lambda=kwargs['gae_lambda'],
             normalize_adv=kwargs['normalize_adv'],
             positive_adv=kwargs['positive_adv'],
+            use_gae=kwargs['use_gae']
         )
 
         algo = PPO(
@@ -107,6 +108,10 @@ def run_experiment(**kwargs):
             learning_rate=kwargs['learning_rate'],
             clip_eps=kwargs['clip_eps'],
             max_epochs=kwargs['num_ppo_steps'],
+            entropy_bonus=kwargs['entropy_bonus'],
+            use_clipper=kwargs['use_clipper'],
+            use_entropy=kwargs['use_entropy'],
+            use_ppo_obj=kwargs['use_ppo_obj']
         )
 
         trainer = Trainer(
@@ -134,6 +139,10 @@ if __name__ == '__main__':
     parser.add_argument('--env_name', type=str, default='HalfCheetah')
     parser.add_argument('--exp_name', type=str, default=None)
     parser.add_argument('--exp_num', type=int, default=0)
+    parser.add_argument('--use_ppo_obj', type=int, default=0)
+    parser.add_argument('--use_clipper', type=int, default=0)
+    parser.add_argument('--use_entropy', type=int, default=0)
+    parser.add_argument('--use_gae', type=int, default=0)
     parser.add_argument('--ensemble', type=int, default=0)
 
     args = parser.parse_args()
@@ -186,6 +195,12 @@ if __name__ == '__main__':
             'scope': None,
             'exp_tag': 'mb_ppo_all',        # For changes besides hyperparams
             'recurrent': False,
+
+            'entropy_bonus': 1e-5,
+            'use_gae': args.use_gae,
+            'use_entropy': args.use_entropy,
+            'use_clipper': args.use_clipper,
+            'use_ppo_obj': args.use_ppo_obj,
         }
 
     run_experiment(**params)
